@@ -1,0 +1,1 @@
+export { FacebookResponse } from "./interfaces";

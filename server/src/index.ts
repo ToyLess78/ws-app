@@ -33,48 +33,15 @@ const initializeServer = async () => {
     io.on("connection", async (socket: Socket) => {
       console.log("Client connected");
 
-      const testUserId = "test-user-id";
-      const testUser: User = {
-        _id: testUserId,
-        name: "Test User",
-        picture: "https://example.com/avatar.png",
-        email: "testuser@example.com",
-        createdAt: new Date().toISOString(),
-      };
-
-      try {
-        // Перевіряємо, чи користувач вже існує
-        const existingUser = await userHandler.getUserById(testUserId);
-        if (!existingUser) {
-          await userHandler.createUser(testUser);
-          console.log("Test user created:", testUser);
-        } else {
-          console.log("Test user already exists:", existingUser);
+      socket.on("authenticateFacebook", async (data) => {
+        try {
+          const user = await userHandler.authUserFromFacebook(data);
+          socket.emit("authenticationSuccess", { success: true, user });
+        } catch (error) {
+          console.error("Failed to authenticate user:", error);
+          socket.emit("error", { success: false, message: error.message });
         }
-      } catch (error) {
-        console.error("Failed to create test user:", error);
-      }
-
-      const testTopic: Topic = {
-        userId: testUserId,
-        name: "Test Topic",
-        photo: "https://example.com/topic.png",
-        messages: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      try {
-        const existingTopics = await topicHandler.getTopicsByUserId(testUserId);
-        if (!existingTopics.some((topic) => topic.name === "Test Topic")) {
-          await topicHandler.createTopic(testTopic);
-          console.log("Test topic created:", testTopic);
-        } else {
-          console.log("Test topic already exists for user:", testUserId);
-        }
-      } catch (error) {
-        console.error("Failed to create test topic:", error);
-      }
+      });
 
     });
 
