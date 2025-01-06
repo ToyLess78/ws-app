@@ -1,10 +1,9 @@
-import React from 'react';
+import "./App.css";
+import { Auth } from "./components";
 
 const App: React.FC = () => {
   return (
-    <div>
-      <h1>Welcome to WS-App</h1>
-    </div>
+    <Auth/>
   );
 };
 

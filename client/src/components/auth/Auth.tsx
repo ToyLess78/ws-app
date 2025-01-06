@@ -1,5 +1,4 @@
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { useFacebookAuth, useGoogleAuth } from "../../hooks";
 import FacebookLogin from "@greatsumini/react-facebook-login";
 import "./Auth.scss";
 import { SocketContext } from "../../context/socket";
@@ -11,38 +10,23 @@ const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID;
 export const Auth: React.FC = () => {
   const socket = useContext(SocketContext);
 
-  const {saveGoogleUserToSession, googleUser} = useGoogleAuth();
-  const {saveFacebookUserToSession, facebookUser} = useFacebookAuth();
-
-  const handleSuccess = (credentialResponse: CredentialResponse) => {
+  const handleGoogleAuth = (credentialResponse: CredentialResponse) => {
     const token = credentialResponse.credential;
+
+    console.log("Google token:", token, "Google credentialResponse:", credentialResponse)
 
     if (!token) {
       toast.error("Google Login Failed: Token is missing");
       return;
     }
 
-    saveGoogleUserToSession(token);
   };
-
-  useEffect(() => {
-    const userData = facebookUser || googleUser;
-    if (userData) {
-      socket.emit("addUser", userData);
-    }
-  }, [googleUser, facebookUser]);
-
-  socket.on("userAdded", (response) => {
-    if (!response.success) {
-      toast.error(`Failed to add user: ${response.message}`);
-    }
-  });
 
   socket.on("error", (response) => {
     toast.error(`Error: ${response.message}`);
   });
 
-  const handleError = () => {
+  const handleGoogleError = () => {
     toast.error("Login Failed");
   };
 
@@ -52,17 +36,17 @@ export const Auth: React.FC = () => {
 
       <GoogleLogin
         locale="en"
-        onSuccess={handleSuccess}
-        onError={handleError}
+        onSuccess={handleGoogleAuth}
+        onError={handleGoogleError}
         useOneTap
       />
 
       <FacebookLogin
         appId={facebookAppId}
         scope={"public_profile"}
-        onFail={handleError}
+        onFail={handleGoogleError}
         onProfileSuccess={(response) => {
-          saveFacebookUserToSession(response);
+          console.log("Facebook response:", response);
         }}
         style={{
           backgroundColor: "#4267b2",
