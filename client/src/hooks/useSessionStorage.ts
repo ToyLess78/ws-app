@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
-import { User, Chat } from "../interfaces/interfaces";
+import { Chat, User } from "../interfaces/interfaces";
 
 export const useSessionStorage = () => {
   const [user, setUser] = useState<User | null>(null);

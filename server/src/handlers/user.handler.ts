@@ -9,13 +9,8 @@ export class UserHandler {
     this.usersCollection = usersCollection;
   }
 
-  public async authUserFromFacebook(data: FacebookResponse): Promise<User> {
+  public async addUserFromFacebook(data: FacebookResponse): Promise<User> {
     const userId = data.id;
-    const existingUser = await this.usersCollection.findOne({ _id: userId });
-
-    if (existingUser) {
-      return existingUser;
-    }
 
     const newUser: User = {
       _id: userId,
@@ -30,6 +25,6 @@ export class UserHandler {
   }
 
   public async getUserById(userId: string): Promise<User | null> {
-    return await this.usersCollection.findOne({ _id: userId });
+    return await this.usersCollection.findOne({_id: userId});
   }
 }

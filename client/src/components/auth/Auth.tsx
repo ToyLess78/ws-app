@@ -12,7 +12,7 @@ const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID;
 export const Auth: React.FC = () => {
   const socket = useContext(SocketContext);
 
-  const {saveUserToSession} = useSessionStorage();
+  const {saveUserToSession, saveChatToSession} = useSessionStorage();
 
   const handleGoogleAuth = (credentialResponse: CredentialResponse) => {
     const token = credentialResponse.credential;
@@ -28,7 +28,7 @@ export const Auth: React.FC = () => {
 
   const handleFacebookAuth = (response: ProfileSuccessResponse) => {
     socket.emit("authenticateFacebook", response);
-  }
+  };
 
   const handleGoogleError = () => {
     toast.error("Login Failed");
@@ -36,6 +36,8 @@ export const Auth: React.FC = () => {
 
   socket.on("authenticationSuccess", (response) => {
     saveUserToSession(response.user);
+    saveChatToSession(response.topics);
+    console.log("response:", response);
   });
 
   return (

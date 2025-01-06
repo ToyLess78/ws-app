@@ -35,11 +35,27 @@ const initializeServer = async () => {
 
       socket.on("authenticateFacebook", async (data) => {
         try {
-          const user = await userHandler.authUserFromFacebook(data);
-          socket.emit("authenticationSuccess", { success: true, user });
+          const existingUser = await userHandler.getUserById(data.id);
+
+          if (existingUser) {
+            const topics = await topicHandler.getTopicsByUserId(existingUser._id);
+            socket.emit("authenticationSuccess", {
+              success: true,
+              user: existingUser,
+              topics,
+            });
+          } else {
+            const user = await userHandler.addUserFromFacebook(data);
+            const testTopic = await topicHandler.createTestTopicForUser(user._id);
+            socket.emit("authenticationSuccess", {
+              success: true,
+              user,
+              topics: [testTopic],
+            });
+          }
         } catch (error) {
           console.error("Failed to authenticate user:", error);
-          socket.emit("error", { success: false, message: error.message });
+          socket.emit("error", {success: false, message: error.message});
         }
       });
 
