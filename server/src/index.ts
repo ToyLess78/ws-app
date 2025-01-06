@@ -1,16 +1,15 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import { Collection, MongoClient } from "mongodb";
-import { GptService } from "./services/gpt.service";
-import { MongoHandler } from "./handlers/mongo.handler";
-import { GptHandler } from "./handlers/gpt.handler";
+import { UserHandler } from "./handlers/user.handler";
+import { TopicHandler } from "./handlers/topic.handler";
 import * as dotenv from "dotenv";
+import { Database } from "./data/database";
+import { Topic } from "./data/models/topic";
+import { User } from "./data/models/user";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3005;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017";
-const DB_NAME = "chat_app";
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -20,33 +19,51 @@ const io = new Server(httpServer, {
   },
 });
 
-let usersCollection: Collection;
-let chatsCollection: Collection;
-
-const mongoClient = new MongoClient(MONGO_URI);
-
 const initializeServer = async () => {
   try {
-    await mongoClient.connect();
-    console.log("Connected to MongoDB");
+    const db = Database.Instance;
+    await db.connect();
 
-    const db = mongoClient.db(DB_NAME);
+    const usersCollection = db.getCollection<User>("users");
+    const topicsCollection = db.getCollection<Topic>("topics");
 
-    usersCollection = db.collection("users");
-    chatsCollection = db.collection("chats");
+    const userHandler = new UserHandler(usersCollection);
+    const topicHandler = new TopicHandler(topicsCollection);
 
-    const gptService = GptService.Instance;
+    io.on("connection", async (socket: Socket) => {
+      console.log("Client connected");
 
-    const onConnection = (socket: Socket): void => {
-      new MongoHandler(io, usersCollection, chatsCollection).handleConnection(socket);
-      new GptHandler(io, gptService).handleConnection(socket);
-    };
+      socket.on("authenticateFacebook", async (data) => {
+        try {
+          const existingUser = await userHandler.getUserById(data.id);
 
-    io.on("connection", onConnection);
+          if (existingUser) {
+            const topics = await topicHandler.getTopicsByUserId(existingUser._id);
+            socket.emit("authenticationSuccess", {
+              success: true,
+              user: existingUser,
+              topics,
+            });
+          } else {
+            const user = await userHandler.addUserFromFacebook(data);
+            const testTopic = await topicHandler.createTestTopicForUser(user._id);
+            socket.emit("authenticationSuccess", {
+              success: true,
+              user,
+              topics: [testTopic],
+            });
+          }
+        } catch (error) {
+          console.error("Failed to authenticate user:", error);
+          socket.emit("error", {success: false, message: error.message});
+        }
+      });
 
-    httpServer.listen(PORT, () =>
-      console.log(`Server is running at http://localhost:${PORT}`)
-    );
+    });
+
+    httpServer.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
   } catch (error) {
     console.error("Failed to initialize server:", error);
   }

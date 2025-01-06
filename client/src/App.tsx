@@ -1,10 +1,16 @@
-import React from 'react';
+import "./App.css";
+import { Auth } from "./components";
+import { toast } from "react-toastify";
+import { socket } from "./context/socket";
 
 const App: React.FC = () => {
+
+  socket.on("error", (response) => {
+    toast.error(`Error: ${response.message}`);
+  });
+
   return (
-    <div>
-      <h1>Welcome to WS-App</h1>
-    </div>
+    <Auth/>
   );
 };
 
