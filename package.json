@@ -1,0 +1,19 @@
+{
+  "name": "ws-app",
+  "version": "0.0.0",
+  "description": "Simple chat application",
+  "scripts": {},
+  "author": "Bilenko Tetiana",
+  "license": "MIT",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "engines": {
+    "node": ">=16 <=20",
+    "npm": ">=8 <=10"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
