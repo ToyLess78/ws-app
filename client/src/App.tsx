@@ -1,5 +1,5 @@
 import "./App.css";
-import { Auth } from "./components";
+import { Auth } from "./components/components";
 import { toast } from "react-toastify";
 import { socket } from "./context/socket";
 

@@ -1,11 +1,10 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import { UserHandler } from "./handlers/user.handler";
-import { TopicHandler } from "./handlers/topic.handler";
+import { TopicHandler, UserHandler } from "./handlers/handlers";
 import * as dotenv from "dotenv";
 import { Database } from "./data/database";
-import { Topic } from "./data/models/topic";
-import { User } from "./data/models/user";
+import { Topic, User } from "./data/models/models";
+import { FacebookAuthService, GoogleAuthService } from "./services/services";
 
 dotenv.config();
 
@@ -30,31 +29,28 @@ const initializeServer = async () => {
     const userHandler = new UserHandler(usersCollection);
     const topicHandler = new TopicHandler(topicsCollection);
 
+    const facebookAuthService = new FacebookAuthService(userHandler, topicHandler);
+    const googleAuthService = new GoogleAuthService(userHandler, topicHandler);
+
     io.on("connection", async (socket: Socket) => {
       console.log("Client connected");
 
       socket.on("authenticateFacebook", async (data) => {
         try {
-          const existingUser = await userHandler.getUserById(data.id);
-
-          if (existingUser) {
-            const topics = await topicHandler.getTopicsByUserId(existingUser._id);
-            socket.emit("authenticationSuccess", {
-              success: true,
-              user: existingUser,
-              topics,
-            });
-          } else {
-            const user = await userHandler.addUserFromFacebook(data);
-            const testTopic = await topicHandler.createTestTopicForUser(user._id);
-            socket.emit("authenticationSuccess", {
-              success: true,
-              user,
-              topics: [testTopic],
-            });
-          }
+          const {user, chat} = await facebookAuthService.authenticate(data);
+          socket.emit("authenticationSuccess", {success: true, user, chat});
         } catch (error) {
           console.error("Failed to authenticate user:", error);
+          socket.emit("error", {success: false, message: error.message});
+        }
+      });
+
+      socket.on("authenticateGoogle", async (data) => {
+        try {
+          const {user, chat} = await googleAuthService.authenticate(data);
+          socket.emit("authenticationSuccess", {success: true, user, chat});
+        } catch (error) {
+          console.error("Failed to authenticate Google user:", error);
           socket.emit("error", {success: false, message: error.message});
         }
       });

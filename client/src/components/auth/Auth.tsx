@@ -5,7 +5,7 @@ import { SocketContext } from "../../context/socket";
 import { useContext } from "react";
 import { toast } from "react-toastify";
 import { ProfileSuccessResponse } from "@greatsumini/react-facebook-login/dist/types/response.type";
-import { useSessionStorage } from "../../hooks";
+import { useSessionStorage } from "../../hooks/hooks";
 
 const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID;
 
@@ -14,16 +14,8 @@ export const Auth: React.FC = () => {
 
   const {saveUserToSession, saveChatToSession} = useSessionStorage();
 
-  const handleGoogleAuth = (credentialResponse: CredentialResponse) => {
-    const token = credentialResponse.credential;
-
-    console.log("Google token:", token, "Google credentialResponse:", credentialResponse);
-
-    if (!token) {
-      toast.error("Google Login Failed: Token is missing");
-      return;
-    }
-
+  const handleGoogleAuth = (response: CredentialResponse) => {
+    socket.emit("authenticateGoogle", response);
   };
 
   const handleFacebookAuth = (response: ProfileSuccessResponse) => {
@@ -36,7 +28,7 @@ export const Auth: React.FC = () => {
 
   socket.on("authenticationSuccess", (response) => {
     saveUserToSession(response.user);
-    saveChatToSession(response.topics);
+    saveChatToSession(response.chat);
     console.log("response:", response);
   });
 

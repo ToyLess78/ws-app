@@ -1,6 +1,5 @@
 import { Collection } from "mongodb";
 import { User } from "../data/models/user";
-import { FacebookResponse } from "../common/interfaces";
 
 export class UserHandler {
   private usersCollection: Collection<User>;
@@ -9,19 +8,9 @@ export class UserHandler {
     this.usersCollection = usersCollection;
   }
 
-  public async addUserFromFacebook(data: FacebookResponse): Promise<User> {
-    const userId = data.id;
-
-    const newUser: User = {
-      _id: userId,
-      name: data.name || "Unknown",
-      picture: data.picture?.data?.url || "",
-      email: data.email || undefined,
-      createdAt: new Date().toISOString(),
-    };
-
-    await this.usersCollection.insertOne(newUser);
-    return newUser;
+  public async addUser(user: User): Promise<User> {
+    await this.usersCollection.insertOne(user);
+    return user;
   }
 
   public async getUserById(userId: string): Promise<User | null> {
