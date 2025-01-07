@@ -1,8 +1,8 @@
 import { TopicHandler, UserHandler } from "../handlers/handlers";
-import { FacebookResponse } from "../common/interfaces";
 import { Topic, User } from "../data/models/models";
+import { DecodedToken, TokenDecoder } from "../utils/token-decoder";
 
-export class FacebookAuthService {
+export class GoogleAuthService {
   private userHandler: UserHandler;
   private topicHandler: TopicHandler;
 
@@ -11,21 +11,24 @@ export class FacebookAuthService {
     this.topicHandler = topicHandler;
   }
 
-  public async authenticate(data: FacebookResponse): Promise<{
+  public async authenticate(data: { credential: string }): Promise<{
     user: User;
     chat: Topic[];
   }> {
-    const existingUser = await this.userHandler.getUserById(data.id);
+    const decoded: DecodedToken = TokenDecoder.decodeGoogleToken(data.credential);
+
+    const userId = decoded.sub;
+    const existingUser = await this.userHandler.getUserById(userId);
 
     if (existingUser) {
       const chat = await this.topicHandler.getTopicsByUserId(existingUser._id);
       return {user: existingUser, chat};
     } else {
       const newUser: User = {
-        _id: data.id,
-        name: data.name || "Unknown",
-        picture: data.picture?.data?.url || "",
-        email: data.email || undefined,
+        _id: userId,
+        name: decoded.name || "Unknown",
+        picture: decoded.picture || "",
+        email: decoded.email || undefined,
         createdAt: new Date().toISOString(),
       };
 

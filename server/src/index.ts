@@ -1,10 +1,10 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import { UserHandler, TopicHandler } from "./handlers/handlers";
+import { TopicHandler, UserHandler } from "./handlers/handlers";
 import * as dotenv from "dotenv";
 import { Database } from "./data/database";
 import { Topic, User } from "./data/models/models";
-import { FacebookAuthService } from "./services/services";
+import { FacebookAuthService, GoogleAuthService } from "./services/services";
 
 dotenv.config();
 
@@ -30,17 +30,28 @@ const initializeServer = async () => {
     const topicHandler = new TopicHandler(topicsCollection);
 
     const facebookAuthService = new FacebookAuthService(userHandler, topicHandler);
+    const googleAuthService = new GoogleAuthService(userHandler, topicHandler);
 
     io.on("connection", async (socket: Socket) => {
       console.log("Client connected");
 
       socket.on("authenticateFacebook", async (data) => {
         try {
-          const { user, chat } = await facebookAuthService.authenticate(data);
-          socket.emit("authenticationSuccess", { success: true, user, chat });
+          const {user, chat} = await facebookAuthService.authenticate(data);
+          socket.emit("authenticationSuccess", {success: true, user, chat});
         } catch (error) {
           console.error("Failed to authenticate user:", error);
-          socket.emit("error", { success: false, message: error.message });
+          socket.emit("error", {success: false, message: error.message});
+        }
+      });
+
+      socket.on("authenticateGoogle", async (data) => {
+        try {
+          const {user, chat} = await googleAuthService.authenticate(data);
+          socket.emit("authenticationSuccess", {success: true, user, chat});
+        } catch (error) {
+          console.error("Failed to authenticate Google user:", error);
+          socket.emit("error", {success: false, message: error.message});
         }
       });
 
