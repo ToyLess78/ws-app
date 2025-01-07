@@ -11,3 +11,10 @@ export interface FacebookResponse {
     };
   };
 }
+
+export interface DecodedToken {
+  name?: string;
+  picture?: string;
+  sub: string;
+  email: string;
+}
