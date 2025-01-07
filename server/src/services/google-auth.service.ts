@@ -33,8 +33,8 @@ export class GoogleAuthService {
       };
 
       await this.userHandler.addUser(newUser);
-      const testChat = await this.topicHandler.createTestTopicForUser(newUser._id);
-      return {user: newUser, chat: [testChat]};
+      const testChats = await this.topicHandler.createTestTopicsForUser(newUser._id);
+      return {user: newUser, chat: testChats};
     }
   }
 }
