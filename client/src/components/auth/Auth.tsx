@@ -36,7 +36,7 @@ export const Auth: React.FC = () => {
 
   socket.on("authenticationSuccess", (response) => {
     saveUserToSession(response.user);
-    saveChatToSession(response.topics);
+    saveChatToSession(response.chat);
     console.log("response:", response);
   });
 
