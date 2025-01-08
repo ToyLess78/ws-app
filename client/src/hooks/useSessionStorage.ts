@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
-import { Chat, User } from "../interfaces/interfaces";
+import { Topic, User } from "../interfaces/interfaces";
 
 export const useSessionStorage = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [chat, setChat] = useState<Chat | null>(null);
+  const [chat, setChat] = useState<Topic[]>([]);
 
   const saveUserToSession = useCallback((user: User) => {
     try {
@@ -15,7 +15,7 @@ export const useSessionStorage = () => {
     }
   }, []);
 
-  const saveChatToSession = useCallback((chat: Chat) => {
+  const saveChatToSession = useCallback((chat: Topic[]) => {
     try {
       sessionStorage.setItem("chat", JSON.stringify(chat));
       setChat(chat);
@@ -34,13 +34,13 @@ export const useSessionStorage = () => {
     }
   }, []);
 
-  const getChatFromSession = useCallback((): Chat | null => {
+  const getChatFromSession = useCallback((): Topic[] => {
     try {
       const storedChat = sessionStorage.getItem("chat");
-      return storedChat ? JSON.parse(storedChat) : null;
+      return storedChat ? JSON.parse(storedChat) : [];
     } catch (error) {
       toast.error(`Failed to get chat: ${error}`);
-      return null;
+      return [];
     }
   }, []);
 
@@ -49,7 +49,7 @@ export const useSessionStorage = () => {
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("chat");
       setUser(null);
-      setChat(null);
+      setChat([]);
     } catch (error) {
       toast.error(`Failed to clear session: ${error}`);
     }
