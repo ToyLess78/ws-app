@@ -46,6 +46,10 @@
     }
   }
 
+  &__action {
+    margin-left: auto;
+  }
+
 
   &__input {
     padding: 30px;
@@ -106,6 +110,7 @@
     .messenger__message-date {
       margin-left: 15px;
     }
+
   }
 
   .user {
@@ -160,5 +165,17 @@
     color: #bfc6c8;
     text-align: center;
     margin-top: 300px;
+  }
+}
+
+.action-button {
+  cursor: pointer;
+
+  &:hover {
+    color: gray;
+  }
+
+  &.icon-del {
+    padding-left: 10px;
   }
 }

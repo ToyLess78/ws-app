@@ -60,4 +60,18 @@ export class TopicHandler {
       {$push: {messages: newMessage}, $set: {updatedAt: new Date().toISOString()}}
     );
   }
+
+  public async deleteTopicById(topicId: string): Promise<boolean> {
+    if (!topicId) {
+      throw new Error("Topic ID is required.");
+    }
+
+    const result = await this.topicsCollection.deleteOne({_id: new ObjectId(topicId)});
+
+    if (result.deletedCount === 0) {
+      throw new Error("Failed to delete topic or topic not found.");
+    }
+
+    return true;
+  }
 }

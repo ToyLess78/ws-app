@@ -1,4 +1,4 @@
 export const getRandomAvatar = (): string => {
-  const randomNumber = Math.floor(Math.random() * 20) + 5;
+  const randomNumber = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
   return `./avatars/u-${randomNumber}.webp`;
 };
