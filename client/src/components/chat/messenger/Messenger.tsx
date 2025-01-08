@@ -1,7 +1,10 @@
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useContext, useState } from "react";
 import "./Messenger.scss";
 import { Messages } from "./Messages";
 import { Topic } from "../../../interfaces/interfaces";
+import { confirmAlert } from "react-confirm-alert";
+import { SocketContext } from "../../../context/socket.ts";
+import { toast } from "react-toastify";
 
 interface MessengerProps {
   topic?: Topic;
@@ -10,6 +13,7 @@ interface MessengerProps {
 
 export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
   const [messageValue, setMessageValue] = useState<string>("");
+  const socket = useContext(SocketContext);
 
   const handleSendMessage = (): void => {
     if (messageValue.trim()) {
@@ -28,6 +32,30 @@ export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
     setMessageValue(e.target.value);
   };
 
+  const HandlerTopicDelete = () => {
+    confirmAlert({
+      message: "Do you want to Delete?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            if (!topic?._id) {
+              toast.error("Invalid topic ID");
+              return;
+            }
+            socket.emit("deleteTopic", {topicId: topic._id});
+          },
+        },
+        {
+          label: "No",
+          onClick: () => {
+            return;
+          },
+        },
+      ],
+    });
+  };
+
   return topic?.name ? (
     <div className="messenger">
       <header className="messenger__user">
@@ -38,7 +66,15 @@ export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
             alt={`${topic.name}'s photo`}
           />
         )}
-        <p className="messenger__user-name">{topic.name}</p>
+        <input type="text" className="messenger__user-name" value={topic.name} disabled/>
+        <div className="messenger__action">
+          <button
+            className="action-button icon-edit"/>
+          <button
+            className="action-button icon-del"
+            onClick={HandlerTopicDelete}/>
+        </div>
+
       </header>
 
       <Messages photo={topic.photo} messages={topic.messages}/>
