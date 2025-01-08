@@ -10,45 +10,45 @@ import { useSessionStorage } from "../../hooks/hooks";
 const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID;
 
 export const Auth: React.FC = () => {
-    const socket = useContext(SocketContext);
+  const socket = useContext(SocketContext);
 
-    const {saveUserToSession, saveChatToSession} = useSessionStorage();
+  const {saveUserToSession, saveChatToSession} = useSessionStorage();
 
-    const handleGoogleAuth = (response: CredentialResponse) => {
-        socket.emit("authenticateGoogle", response);
-    };
+  const handleGoogleAuth = (response: CredentialResponse) => {
+    socket.emit("authenticateGoogle", response);
+  };
 
-    const handleFacebookAuth = (response: ProfileSuccessResponse) => {
-        socket.emit("authenticateFacebook", response);
-    };
+  const handleFacebookAuth = (response: ProfileSuccessResponse) => {
+    socket.emit("authenticateFacebook", response);
+  };
 
-    const handleAuthError = () => {
-        toast.error("Login Failed");
-    };
+  const handleAuthError = () => {
+    toast.error("Login Failed");
+  };
 
-    socket.on("authenticationSuccess", (response) => {
-        saveUserToSession(response.user);
-        saveChatToSession(response.chat);
-    });
+  socket.on("authenticationSuccess", (response) => {
+    saveUserToSession(response.user);
+    saveChatToSession(response.chat);
+  });
 
-    return (
-        <div>
-            <p className="auth__title">Login to continue</p>
+  return (
+    <div>
+      <p className="auth__title">Login to continue</p>
 
-            <GoogleLogin
-                locale="en"
-                onSuccess={handleGoogleAuth}
-                onError={handleAuthError}
-                useOneTap
-            />
+      <GoogleLogin
+        locale="en"
+        onSuccess={handleGoogleAuth}
+        onError={handleAuthError}
+        useOneTap
+      />
 
-            <FacebookLogin
-                className="facebook-button"
-                appId={facebookAppId}
-                scope="public_profile"
-                onFail={handleAuthError}
-                onProfileSuccess={handleFacebookAuth}
-            />
-        </div>
-    );
+      <FacebookLogin
+        className="facebook-button"
+        appId={facebookAppId}
+        scope="public_profile"
+        onFail={handleAuthError}
+        onProfileSuccess={handleFacebookAuth}
+      />
+    </div>
+  );
 };
