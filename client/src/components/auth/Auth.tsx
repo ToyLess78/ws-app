@@ -10,55 +10,45 @@ import { useSessionStorage } from "../../hooks/hooks";
 const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID;
 
 export const Auth: React.FC = () => {
-  const socket = useContext(SocketContext);
+    const socket = useContext(SocketContext);
 
-  const {saveUserToSession, saveChatToSession} = useSessionStorage();
+    const {saveUserToSession, saveChatToSession} = useSessionStorage();
 
-  const handleGoogleAuth = (response: CredentialResponse) => {
-    socket.emit("authenticateGoogle", response);
-  };
+    const handleGoogleAuth = (response: CredentialResponse) => {
+        socket.emit("authenticateGoogle", response);
+    };
 
-  const handleFacebookAuth = (response: ProfileSuccessResponse) => {
-    socket.emit("authenticateFacebook", response);
-  };
+    const handleFacebookAuth = (response: ProfileSuccessResponse) => {
+        socket.emit("authenticateFacebook", response);
+    };
 
-  const handleGoogleError = () => {
-    toast.error("Login Failed");
-  };
+    const handleAuthError = () => {
+        toast.error("Login Failed");
+    };
 
-  socket.on("authenticationSuccess", (response) => {
-    saveUserToSession(response.user);
-    saveChatToSession(response.chat);
-    console.log("response:", response);
-  });
+    socket.on("authenticationSuccess", (response) => {
+        saveUserToSession(response.user);
+        saveChatToSession(response.chat);
+    });
 
-  return (
-    <div>
-      <p className="auth__title">Login to continue</p>
+    return (
+        <div>
+            <p className="auth__title">Login to continue</p>
 
-      <GoogleLogin
-        locale="en"
-        onSuccess={handleGoogleAuth}
-        onError={handleGoogleError}
-        useOneTap
-      />
+            <GoogleLogin
+                locale="en"
+                onSuccess={handleGoogleAuth}
+                onError={handleAuthError}
+                useOneTap
+            />
 
-      <FacebookLogin
-        appId={facebookAppId}
-        scope={"public_profile"}
-        onFail={handleGoogleError}
-        onProfileSuccess={handleFacebookAuth}
-        style={{
-          backgroundColor: "#4267b2",
-          color: "#fff",
-          fontSize: "16px",
-          padding: "12px 24px",
-          marginTop: "14px",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-      />
-    </div>
-  );
+            <FacebookLogin
+                className="facebook-button"
+                appId={facebookAppId}
+                scope="public_profile"
+                onFail={handleAuthError}
+                onProfileSuccess={handleFacebookAuth}
+            />
+        </div>
+    );
 };
