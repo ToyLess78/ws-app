@@ -1,0 +1,79 @@
+@use "../../../../scss/variables.scss" as *;
+
+.sidebar__chats {
+  overflow-y: scroll;
+  height: calc(100vh - 179px);
+  background-color: $bgPrimary;
+  padding-bottom: 20px;
+  transition: all .4s ease;
+
+  &-item-photo {
+    width: 50px;
+    border-radius: 50%;
+  }
+
+
+  &-title {
+    text-align: left;
+    padding: 10px;
+    color: $textSecondary;
+    font-weight: bold;
+    @include font(20px, 18px);
+  }
+
+  .active {
+    background-color: $bgSecondaryLight;
+  }
+
+  &-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 15px;
+    cursor: pointer;
+    transition: all .4s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.178);
+
+
+    &:hover {
+      background-color: $bgSecondaryLight;
+    }
+
+    &-date {
+      @include font(12px, 10px);
+      color: gray;
+      float: right;
+    }
+
+    &-infoRow {
+      display: flex;
+      align-items: start;
+      column-gap: 16px;
+      text-align: left;
+      flex: 1 1 auto;
+
+
+    }
+
+    &-block {
+      width: 100%;
+    }
+
+    &-message {
+      color: gray;
+      opacity: 0.7;
+      line-height: 17px;
+      width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      height: 25px;
+      text-overflow: ellipsis;
+      text-align: left;
+    }
+
+    &-name {
+      margin-bottom: 5px;
+      @include font(16px, 12px);
+    }
+  }
+}

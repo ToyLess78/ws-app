@@ -1,0 +1,104 @@
+@use "../../../scss/variables.scss" as *;
+
+
+.sidebar {
+  flex: 500px;
+  background: $bgSecondaryLight;
+  border-right: 1px solid rgba(0, 0, 0, 0.178);
+
+  &__no-results {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 25px;
+    color: #bfc6c8;
+    text-align: center;
+    margin-top: 100px;
+  }
+
+
+  .sidebar__user {
+    margin-top: 20px;
+    padding: 0px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    column-gap: 25px;
+    margin-bottom: 30px;
+
+    &-name {
+      @include font(20px, 20px);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    &-img {
+      border-radius: 50%;
+      width: 50px;
+      height: auto;
+    }
+  }
+
+  .sidebar {
+    &__add-button {
+      font-size: 16px;
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      cursor: pointer;
+      color: #242424;
+      background-color: white;
+
+      &:hover {
+        color: gray;
+      }
+    }
+
+    &__search {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.178);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+
+      &-nomatches {
+        text-align: center;
+        @include font(20px, 20px);
+        width: 400px;
+        margin: 200px auto 0 auto;
+        color: $textSecondary;
+
+        span {
+          color: red;
+        }
+      }
+
+      &-input-row {
+        position: relative;
+        display: flex;
+        width: 100%;
+      }
+
+      &-input {
+        width: 100%;
+        background-color: white;
+        border: 1px solid rgba(126, 126, 126, 0.329);
+        border-radius: 15px;
+        padding: 7px 35px;
+        margin-bottom: 10px;
+        @include font(16px, 10px);
+
+        &:focus {
+          outline: none;
+          border-color: rgba(0, 0, 0, 0.329);
+        }
+      }
+
+      &-icon {
+        font-size: 18px;
+        position: absolute;
+        left: 10px;
+        top: 8px;
+      }
+    }
+  }
+}
