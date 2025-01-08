@@ -29,6 +29,7 @@ export const Auth: React.FC = () => {
   socket.on("authenticationSuccess", (response) => {
     saveUserToSession(response.user);
     saveChatToSession(response.chat);
+    window.location.reload();
   });
 
   return (
