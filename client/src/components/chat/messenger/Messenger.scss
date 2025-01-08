@@ -1,0 +1,164 @@
+@use "../../../scss/variables.scss" as *;
+
+.messenger {
+  flex: 1 0 65%;
+  background-color: $bgSecondaryLight;
+  display: flex;
+  flex-direction: column;
+
+  &__empty {
+    font-weight: 700;
+    font-size: 25px;
+    line-height: 25px;
+    color: #bfc6c8;
+    text-align: center;
+    margin-top: 200px;
+  }
+
+  &__photo {
+    @include size(40px);
+  }
+
+  &__row {
+    display: flex;
+    column-gap: 10px;
+  }
+
+  .hide {
+    display: none;
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    column-gap: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.178);
+
+
+    &-name {
+      font-weight: bold;
+      @include font(20px, 20px);
+    }
+
+    &-photo {
+      @include size(50px);
+    }
+  }
+
+
+  &__input {
+    padding: 30px;
+  }
+
+  &__textfield {
+    width: 100%;
+    background-color: white;
+    border: 1px solid rgba(126, 126, 126, 0.329);
+    border-radius: 15px;
+    @include font(17px, 18px);
+    padding: 10px 15px;
+
+    &:focus {
+      outline: none;
+      border-color: rgba(0, 0, 0, 0.329);
+    }
+  }
+
+  &__input-button {
+    @include size(25px);
+    font-size: 18px;
+    cursor: pointer;
+    position: absolute;
+    top: 12px;
+    padding: 2px;
+    right: 10px;
+    background-color: white;
+    transition: all .4s ease;
+
+    &:hover {
+      background-color: rgba(164, 163, 163, 0.13);
+      border-radius: 50%;
+      color: gray;
+    }
+  }
+
+  &__input-row {
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+  }
+
+  &__messages {
+    padding: 15px 0;
+    background-color: white;
+    flex-grow: 1;
+    overflow-y: scroll;
+  }
+
+  .bot {
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+    margin-left: 15px;
+
+    .messenger__message-date {
+      margin-left: 15px;
+    }
+  }
+
+  .user {
+    display: flex;
+    text-align: right;
+    justify-content: flex-end;
+    margin-right: 15px;
+
+    .messenger__message-date {
+      margin-right: 15px;
+    }
+
+    .messenger__message-text {
+      background-color: $bgSecondaryLight;
+      color: $textPrimary;
+    }
+  }
+
+  &__message {
+    display: flex;
+    margin-bottom: 10px;
+
+    &-text {
+      color: $bgPrimary;
+      background: rgba(24, 28, 37, 0.65);
+      padding: 12px;
+      text-align: center;
+      border-radius: 17px;
+      @include font(17px, 24px);
+      margin-bottom: 5px;
+      max-width: 600px;
+    }
+
+    .align-left {
+      text-align: left;
+    }
+
+    &-date {
+      color: gray;
+      @include font(12px, 14px)
+    }
+  }
+}
+
+.choose {
+  flex: 1 0 65%;
+  background-color: rgb(243, 243, 243);
+
+  &__chat {
+    font-weight: 700;
+    @include font(35px, 25px);
+    color: #bfc6c8;
+    text-align: center;
+    margin-top: 300px;
+  }
+}
