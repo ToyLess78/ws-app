@@ -85,7 +85,6 @@ export const Sidebar: React.FC<SidebarProps> = (
 
           {chatLength ? (
             <Topics
-              searchValue={searchValue}
               chat={filteredTopics}
               setActiveTopic={setActiveTopic}
               activeTopic={activeTopic}

@@ -10,9 +10,6 @@ const formattedDate = (date: Date | string): string =>
   dayjs(date).format("M/D/YYYY h:mm A");
 
 export const Messages: React.FC<MessagesProps> = ({messages, photo}) => {
-  // if (!messages.length) {
-  //   return <p className="messenger__empty">No messages to display</p>;
-  // }
 
   return (
     <div className="messenger__messages">
