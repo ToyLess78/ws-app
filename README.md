@@ -43,7 +43,6 @@
 
 ### Available Scripts
 
-
 Here are the scripts defined in the root `package.json`:
 
 ```
