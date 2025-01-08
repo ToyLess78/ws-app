@@ -67,6 +67,23 @@ const initializeServer = async () => {
         }
       });
 
+      socket.on("deleteTopic", async (data) => {
+        const {topicId} = data;
+
+        if (!topicId) {
+          socket.emit("error", {success: false, message: "Topic ID is required."});
+          return;
+        }
+
+        try {
+          await topicHandler.deleteTopicById(topicId);
+          socket.emit("topicDeleted", {success: true, topicId});
+        } catch (error) {
+          console.error("Failed to delete topic:", error.message);
+          socket.emit("error", {success: false, message: error.message});
+        }
+      });
+
     });
 
     httpServer.listen(PORT, () => {
