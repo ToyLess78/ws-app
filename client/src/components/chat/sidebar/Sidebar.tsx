@@ -1,8 +1,10 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import "./Sidebar.scss";
 import { Logout } from "../../auth/Logout";
 import { Topics } from "./topics/Topics.tsx";
 import { Topic, User } from "../../../interfaces/interfaces";
+import { SocketContext } from "../../../context/socket.ts";
+import { toast } from "react-toastify";
 
 interface SidebarProps {
   user?: User;
@@ -19,22 +21,50 @@ export const Sidebar: React.FC<SidebarProps> = (
     activeTopic,
   }) => {
   const [searchValue, setSearchValue] = useState<string>("");
+  const [chatLength, setChatLength] = useState(chat.length);
+  const socket = useContext(SocketContext);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setSearchValue(e.target.value);
     console.log("activeTopic", activeTopic);
   };
 
+  const validateTopicName = (user: User | undefined, searchValue: string): string | null => {
+    if (!user || !user._id) {
+      return "User not authenticated.";
+    }
+
+    const trimmedValue = searchValue.trim();
+    const words = trimmedValue.split(/\s+/);
+
+    if (words.length < 2 || words.some((word) => word.length < 2)) {
+      return "Topic name must contain at least 2 words with 2 characters each.";
+    }
+
+    return null;
+  };
+
   const handleAddTopic = () => {
-    console.log("searchValue", searchValue, user?.userId);
+    const validationError = validateTopicName(user, searchValue);
+
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    const trimmedValue = searchValue.trim();
+
+    socket.emit("createTopic", {
+      userId: user?._id,
+      name: trimmedValue,
+    });
+
     setSearchValue("");
   };
 
   const filteredTopics = chat.filter(({name}) =>
     name.toLowerCase().startsWith(searchValue.toLowerCase())
   );
-
-  const [chatLength, setChatLength] = useState(chat.length);
 
   useEffect(() => {
     setChatLength(filteredTopics.length);

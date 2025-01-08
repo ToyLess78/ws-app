@@ -3,6 +3,7 @@ import { Topic } from "../data/models/topic";
 import { Message } from "../data/models/message";
 import { getTestTopicsForUser } from "../fixtures/test-topics";
 import { randomUUID } from "crypto";
+import { getRandomAvatar } from "../utils/utils";
 
 export class TopicHandler {
   private topicsCollection: Collection<Topic>;
@@ -20,14 +21,25 @@ export class TopicHandler {
     return await this.topicsCollection.find({_id: {$in: insertedIds}}).toArray();
   }
 
-  public async createTopic(data: Topic): Promise<Topic> {
+  public async createTopic(userId: string, name: string): Promise<Topic> {
+    if (!userId || !name) {
+      throw new Error("Invalid topic data.");
+    }
+
     const topic: Topic = {
-      ...data,
+      userId,
+      name,
+      photo: getRandomAvatar(),
+      messages: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
     const result = await this.topicsCollection.insertOne(topic);
+
+    if (!result.acknowledged) {
+      throw new Error("Failed to insert topic into the database.");
+    }
 
     return await this.topicsCollection.findOne({_id: result.insertedId});
   }

@@ -55,6 +55,18 @@ const initializeServer = async () => {
         }
       });
 
+      socket.on("createTopic", async (data) => {
+        const {userId, name} = data;
+
+        try {
+          const newTopic = await topicHandler.createTopic(userId, name);
+          socket.emit("topicCreated", {success: true, topic: newTopic});
+        } catch (error) {
+          console.error("Failed to create topic:", error.message);
+          socket.emit("error", {success: false, message: error.message});
+        }
+      });
+
     });
 
     httpServer.listen(PORT, () => {
