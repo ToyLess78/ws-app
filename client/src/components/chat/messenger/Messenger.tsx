@@ -1,10 +1,12 @@
-import { ChangeEvent, KeyboardEvent, useContext, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useContext, useEffect, useState } from "react";
 import "./Messenger.scss";
 import { Messages } from "./Messages";
 import { Topic } from "../../../interfaces/interfaces";
 import { confirmAlert } from "react-confirm-alert";
 import { SocketContext } from "../../../context/socket.ts";
 import { toast } from "react-toastify";
+import { validateTopicName } from "../../../utils/validateTopicName.ts";
+import { TopicActions } from "./TopicActions.tsx";
 
 interface MessengerProps {
   topic?: Topic;
@@ -13,7 +15,15 @@ interface MessengerProps {
 
 export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
   const [messageValue, setMessageValue] = useState<string>("");
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editedName, setEditedName] = useState<string>(topic?.name || "");
   const socket = useContext(SocketContext);
+
+  useEffect(() => {
+    if (topic?.name && !isEditing) {
+      setEditedName(topic.name);
+    }
+  }, [topic?.name]);
 
   const handleSendMessage = (): void => {
     if (messageValue.trim()) {
@@ -56,6 +66,28 @@ export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
     });
   };
 
+  const handleEditNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setEditedName(e.target.value);
+  };
+
+  const handleEditToggle = (): void => {
+    setIsEditing(true);
+  };
+
+  const handleSaveName = (): void => {
+    const validationError = validateTopicName(editedName);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    if (topic?._id) {
+      socket.emit("updateTopicName", {topicId: topic._id, name: editedName});
+    }
+
+    setIsEditing(false);
+  };
+
   return topic?.name ? (
     <div className="messenger">
       <header className="messenger__user">
@@ -66,15 +98,19 @@ export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
             alt={`${topic.name}'s photo`}
           />
         )}
-        <input type="text" className="messenger__user-name" value={topic.name} disabled/>
-        <div className="messenger__action">
-          <button
-            className="action-button icon-edit"/>
-          <button
-            className="action-button icon-del"
-            onClick={HandlerTopicDelete}/>
-        </div>
-
+        <input
+          type="text"
+          className="messenger__user-name"
+          value={editedName}
+          onChange={handleEditNameChange}
+          disabled={!isEditing}
+        />
+        <TopicActions
+          isEditing={isEditing}
+          handleSave={handleSaveName}
+          handleEdit={handleEditToggle}
+          handleDelete={HandlerTopicDelete}
+        />
       </header>
 
       <Messages photo={topic.photo} messages={topic.messages}/>

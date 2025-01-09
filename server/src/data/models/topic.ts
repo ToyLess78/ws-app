@@ -1,6 +1,8 @@
 import { Message } from "./message";
+import { ObjectId } from "mongodb";
 
 export class Topic {
+  public _id?: ObjectId;
   public userId: string;
   public createdAt: string;
   public updatedAt: string;

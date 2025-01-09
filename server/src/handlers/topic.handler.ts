@@ -1,4 +1,4 @@
-import { Collection, InsertManyResult, ObjectId } from "mongodb";
+import { Collection, EnhancedOmit, InferIdType, InsertManyResult, ObjectId } from "mongodb";
 import { Topic } from "../data/models/topic";
 import { Message } from "../data/models/message";
 import { getTestTopicsForUser } from "../fixtures/test-topics";
@@ -46,6 +46,25 @@ export class TopicHandler {
 
   public async getTopicsByUserId(userId: string): Promise<Topic[]> {
     return await this.topicsCollection.find({userId}).toArray();
+  }
+
+  public async updateTopicName(topicId: string, name: string): Promise<Topic> {
+    if (!topicId || !name) {
+      throw new Error("Invalid topic data.");
+    }
+
+    const result: EnhancedOmit<Topic, "_id"> & {
+      _id: InferIdType<Topic>
+    } = await this.topicsCollection.findOneAndUpdate(
+      {_id: new ObjectId(topicId)},
+      {$set: {name, updatedAt: new Date().toISOString()}},
+      {returnDocument: "after"}
+    );
+
+    if (!result) {
+      throw new Error("Topic not found or update failed.");
+    }
+    return result;
   }
 
   public async addMessageToTopic(topicId: string, message: Message): Promise<void> {

@@ -30,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = (
   };
 
   const handleAddTopic = () => {
-    const validationError = validateTopicName(user, searchValue);
+    const validationError = validateTopicName(searchValue);
 
     if (validationError) {
       toast.error(validationError);

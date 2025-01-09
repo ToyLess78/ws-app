@@ -48,16 +48,21 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
     }
   };
 
-  useEffect(() => {
-    const handleSocketError = (response: { message: string }) => {
-      toast.error(`Error: ${response.message}`);
-    };
-    socket.on("error", handleSocketError);
+  const handleTopicUpdated = (response: { success: boolean; topic: Topic }) => {
+    if (response.success) {
+      const updatedTopics = topicsList.map((topic) =>
+        topic._id === response.topic._id ? response.topic : topic
+      );
+      setTopicsList(updatedTopics);
+      saveChatToSession(updatedTopics);
+      setActiveTopic(response.topic);
+      toast.success(`Topic "${response.topic.name}" updated successfully!`);
+    }
+  };
 
-    return () => {
-      socket.off("error", handleSocketError);
-    };
-  }, []);
+  const handleSocketError = (response: { message: string }) => {
+    toast.error(`Error: ${response.message}`);
+  };
 
   const sortTopics = (item: Topic): void => {
     const updatedTopics = topicsList.filter((topic) => topic._id !== item._id);
@@ -116,14 +121,16 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
     getApi(item);
   };
   useEffect(() => {
-
+    socket.on("error", handleSocketError);
     socket.on("topicCreated", handleTopicCreated);
     socket.on("topicDeleted", handleTopicDeleted);
+    socket.on("topicUpdated", handleTopicUpdated);
 
     return () => {
+      socket.off("error", handleSocketError);
       socket.off("topicCreated", handleTopicCreated);
       socket.off("topicDeleted", handleTopicDeleted);
-
+      socket.off("topicUpdated", handleTopicUpdated);
     };
 
   }, [topicsList, saveChatToSession]);
