@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import { Database } from "./data/database";
 import { Topic, User } from "./data/models/models";
 import { FacebookAuthService, GoogleAuthService } from "./services/services";
+import { authListeners, topicListeners } from "./listeners/listeners";
 
 dotenv.config();
 
@@ -35,54 +36,9 @@ const initializeServer = async () => {
     io.on("connection", async (socket: Socket) => {
       console.log("Client connected");
 
-      socket.on("authenticateFacebook", async (data) => {
-        try {
-          const {user, chat} = await facebookAuthService.authenticate(data);
-          socket.emit("authenticationSuccess", {success: true, user, chat});
-        } catch (error) {
-          console.error("Failed to authenticate user:", error);
-          socket.emit("error", {success: false, message: error.message});
-        }
-      });
+      authListeners(socket, facebookAuthService, googleAuthService);
 
-      socket.on("authenticateGoogle", async (data) => {
-        try {
-          const {user, chat} = await googleAuthService.authenticate(data);
-          socket.emit("authenticationSuccess", {success: true, user, chat});
-        } catch (error) {
-          console.error("Failed to authenticate Google user:", error);
-          socket.emit("error", {success: false, message: error.message});
-        }
-      });
-
-      socket.on("createTopic", async (data) => {
-        const {userId, name} = data;
-
-        try {
-          const newTopic = await topicHandler.createTopic(userId, name);
-          socket.emit("topicCreated", {success: true, topic: newTopic});
-        } catch (error) {
-          console.error("Failed to create topic:", error.message);
-          socket.emit("error", {success: false, message: error.message});
-        }
-      });
-
-      socket.on("deleteTopic", async (data) => {
-        const {topicId} = data;
-
-        if (!topicId) {
-          socket.emit("error", {success: false, message: "Topic ID is required."});
-          return;
-        }
-
-        try {
-          await topicHandler.deleteTopicById(topicId);
-          socket.emit("topicDeleted", {success: true, topicId});
-        } catch (error) {
-          console.error("Failed to delete topic:", error.message);
-          socket.emit("error", {success: false, message: error.message});
-        }
-      });
+      topicListeners(socket, topicHandler);
 
     });
 
