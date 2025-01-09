@@ -1,9 +1,4 @@
-import { User } from "../interfaces/interfaces.ts";
-
-export const validateTopicName = (user: User | undefined, searchValue: string): string | null => {
-  if (!user || !user._id) {
-    return "User not authenticated.";
-  }
+export const validateTopicName = (searchValue: string): string | null => {
 
   const trimmedValue = searchValue.trim();
   const words = trimmedValue.split(/\s+/);
