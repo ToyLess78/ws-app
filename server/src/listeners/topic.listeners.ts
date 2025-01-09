@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import { TopicHandler } from "../handlers/handlers";
+import { logger } from "../config/config";
 
 export const topicListeners = (socket: Socket, topicHandler: TopicHandler): void => {
   socket.on("createTopic", async (data) => {
@@ -9,7 +10,7 @@ export const topicListeners = (socket: Socket, topicHandler: TopicHandler): void
       const newTopic = await topicHandler.createTopic(userId, name);
       socket.emit("topicCreated", {success: true, topic: newTopic});
     } catch (error) {
-      console.error("Failed to create topic:", error.message);
+      logger.error("Failed to create topic:", error.message);
       socket.emit("error", {success: false, message: error.message});
     }
   });
@@ -26,7 +27,7 @@ export const topicListeners = (socket: Socket, topicHandler: TopicHandler): void
       await topicHandler.deleteTopicById(topicId);
       socket.emit("topicDeleted", {success: true, topicId});
     } catch (error) {
-      console.error("Failed to delete topic:", error.message);
+      logger.error("Failed to delete topic:", error.message);
       socket.emit("error", {success: false, message: error.message});
     }
   });
@@ -43,7 +44,7 @@ export const topicListeners = (socket: Socket, topicHandler: TopicHandler): void
       const updatedTopic = await topicHandler.updateTopicName(topicId, name);
       socket.emit("topicUpdated", {success: true, topic: updatedTopic});
     } catch (error) {
-      console.error("Failed to update topic name:", error.message);
+      logger.error("Failed to update topic name:", error.message);
       socket.emit("error", {success: false, message: error.message});
     }
   });

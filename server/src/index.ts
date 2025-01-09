@@ -1,15 +1,13 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { TopicHandler, UserHandler } from "./handlers/handlers";
-import * as dotenv from "dotenv";
-import { Database } from "./data/database";
 import { Topic, User } from "./data/models/models";
 import { FacebookAuthService, GoogleAuthService } from "./services/services";
 import { authListeners, topicListeners } from "./listeners/listeners";
+import { config, Database, logger } from "./config/config";
 
-dotenv.config();
 
-const PORT = process.env.PORT || 3005;
+const PORT = config.PORT;
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -34,7 +32,7 @@ const initializeServer = async () => {
     const googleAuthService = new GoogleAuthService(userHandler, topicHandler);
 
     io.on("connection", async (socket: Socket) => {
-      console.log("Client connected");
+      logger.info("Client connected");
 
       authListeners(socket, facebookAuthService, googleAuthService);
 
@@ -43,10 +41,10 @@ const initializeServer = async () => {
     });
 
     httpServer.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      logger.info(`Server is running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to initialize server:", error);
+    logger.error("Failed to initialize server:", error);
   }
 };
 
