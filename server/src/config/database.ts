@@ -1,4 +1,5 @@
 import { Collection, MongoClient } from "mongodb";
+import { logger } from "./config";
 
 export class Database {
   private static instance: Database;
@@ -18,9 +19,9 @@ export class Database {
   public async connect(): Promise<void> {
     try {
       await this.client.connect();
-      console.log("Connected to MongoDB");
+      logger.info("Connected to MongoDB");
     } catch (error) {
-      console.error("Failed to connect to MongoDB:", error);
+      logger.error("Failed to connect to MongoDB:", error);
       throw error;
     }
   }
