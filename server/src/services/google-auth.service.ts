@@ -1,6 +1,6 @@
 import { TopicHandler, UserHandler } from "../handlers/handlers";
 import { Topic, User } from "../data/models/models";
-import { DecodedToken, TokenDecoder } from "../utils/token-decoder";
+import { DecodedToken, TokenDecoder } from "../utils/utils";
 
 export class GoogleAuthService {
   private userHandler: UserHandler;
