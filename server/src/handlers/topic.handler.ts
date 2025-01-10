@@ -1,8 +1,6 @@
 import { Collection, EnhancedOmit, InferIdType, InsertManyResult, ObjectId } from "mongodb";
 import { Topic } from "../data/models/topic";
-import { Message } from "../data/models/message";
 import { getTestTopicsForUser } from "../fixtures/test-topics";
-import { randomUUID } from "crypto";
 import { getRandomAvatar } from "../utils/utils";
 
 export class TopicHandler {
@@ -65,19 +63,6 @@ export class TopicHandler {
       throw new Error("Topic not found or update failed.");
     }
     return result;
-  }
-
-  public async addMessageToTopic(topicId: string, message: Message): Promise<void> {
-    const newMessage = {
-      ...message,
-      messageId: randomUUID(),
-      timestamp: new Date().toISOString(),
-    };
-
-    await this.topicsCollection.updateOne(
-      {_id: new ObjectId(topicId)},
-      {$push: {messages: newMessage}, $set: {updatedAt: new Date().toISOString()}}
-    );
   }
 
   public async deleteTopicById(topicId: string): Promise<boolean> {

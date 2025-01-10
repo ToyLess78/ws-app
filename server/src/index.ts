@@ -4,8 +4,9 @@ import { TopicHandler, UserHandler } from "./handlers/handlers";
 import * as dotenv from "dotenv";
 import { Database } from "./data/database";
 import { Topic, User } from "./data/models/models";
-import { FacebookAuthService, GoogleAuthService } from "./services/services";
-import { authListeners, topicListeners } from "./listeners/listeners";
+import { FacebookAuthService, GoogleAuthService, RandomMessageService } from "./services/services";
+import { registerAuthListeners, registerMessageListeners, registerTopicListeners } from "./listeners/listeners";
+import { MessageHandler } from "./handlers/message.handler";
 
 dotenv.config();
 
@@ -29,21 +30,25 @@ const initializeServer = async () => {
 
     const userHandler = new UserHandler(usersCollection);
     const topicHandler = new TopicHandler(topicsCollection);
+    const messageHandler = new MessageHandler(topicsCollection);
 
     const facebookAuthService = new FacebookAuthService(userHandler, topicHandler);
     const googleAuthService = new GoogleAuthService(userHandler, topicHandler);
+    const randomMessageService = RandomMessageService.Instance;
 
     io.on("connection", async (socket: Socket) => {
-      console.log("Client connected");
+      console.info("Client connected");
 
-      authListeners(socket, facebookAuthService, googleAuthService);
+      registerAuthListeners(socket, facebookAuthService, googleAuthService);
 
-      topicListeners(socket, topicHandler);
+      registerTopicListeners(socket, topicHandler);
+
+      registerMessageListeners(socket, messageHandler, topicHandler, randomMessageService);
 
     });
 
     httpServer.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      console.info(`Server is running on http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error("Failed to initialize server:", error);

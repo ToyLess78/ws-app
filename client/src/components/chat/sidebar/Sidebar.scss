@@ -6,6 +6,42 @@
   background: $bgSecondaryLight;
   border-right: 1px solid rgba(0, 0, 0, 0.178);
 
+  &__chats-item-unread {
+    display: inline-block;
+    background-color: #ff4d4f;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+
+    &-button {
+      border-radius: 10px;
+      padding: 4px 10px;
+      border: 1px solid $textPrimary;
+      outline: none;
+      transition: all .2s ease-in-out;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.4;
+      }
+
+      &:active {
+        opacity: 1;
+      }
+    }
+  }
+
   &__no-results {
     font-weight: 700;
     font-size: 20px;
@@ -18,7 +54,7 @@
 
   .sidebar__user {
     margin-top: 20px;
-    padding: 0px 20px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-around;

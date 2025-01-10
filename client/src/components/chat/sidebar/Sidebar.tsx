@@ -1,6 +1,6 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import "./Sidebar.scss";
-import { Logout } from "../../auth/Logout";
+import { SidebarActions } from "./SidebarActions.tsx";
 import { Topics } from "./topics/Topics.tsx";
 import { Topic, User } from "../../../interfaces/interfaces";
 import { SocketContext } from "../../../context/socket.ts";
@@ -12,6 +12,8 @@ interface SidebarProps {
   setActiveTopic: (topic: Topic) => void;
   chat: Topic[];
   activeTopic: Topic;
+  unreadMessages: string[] | [];
+
 }
 
 export const Sidebar: React.FC<SidebarProps> = (
@@ -20,6 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = (
     setActiveTopic,
     chat,
     activeTopic,
+    unreadMessages
   }) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [chatLength, setChatLength] = useState(chat.length);
@@ -72,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = (
           className="sidebar__user-img"
         />
         <p className="sidebar__user-name">{user?.name || "User not found"}</p>
-        <Logout/>
+        <SidebarActions user={user}/>
       </header>
 
       <section className="sidebar__search">
@@ -103,11 +106,11 @@ export const Sidebar: React.FC<SidebarProps> = (
               chat={filteredTopics}
               setActiveTopic={setActiveTopic}
               activeTopic={activeTopic}
+              unreadMessages={unreadMessages}
             />
           ) : (
             <h5 className="sidebar__no-results">No chats found</h5>
           )}
-
         </div>
       </section>
     </aside>

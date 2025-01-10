@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import { FacebookAuthService, GoogleAuthService } from "../services/services";
 
-export const authListeners = (
+export const registerAuthListeners = (
   socket: Socket,
   facebookAuthService: FacebookAuthService,
   googleAuthService: GoogleAuthService

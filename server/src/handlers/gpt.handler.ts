@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { GptService } from "../services/gpt.service";
+import { GptService } from "../services/services";
 
 export class GptHandler {
   private io: Server;
