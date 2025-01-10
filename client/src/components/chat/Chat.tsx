@@ -20,8 +20,13 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
 
   const [topicsList, setTopicsList] = useState<Topic[]>(getChatFromSession() || []);
 
+  const [unreadMessages, setUnreadMessages] = useState<string[]>([]);
+
+
   const onActiveTopic = (topic: Topic) => {
     setActiveTopic(topic);
+
+    setUnreadMessages((prevUnread) => prevUnread.filter((id) => id !== topic._id));
   };
 
   const sortTopicsByUpdatedAt = (topics: Topic[]): Topic[] => {
@@ -45,6 +50,7 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
       saveChatToSession(newTopicsList);
     }
   };
+
   const handleTopicUpdated = (response: { success: boolean; topic: Topic }) => {
     if (response.success) {
       const updatedTopics = topicsList.map((topic) =>
@@ -52,24 +58,19 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
       );
 
       const sortedTopics = sortTopicsByUpdatedAt(updatedTopics);
-      let shouldShowToast = false;
 
       setActiveTopic((prevState) => {
         if ("_id" in prevState && prevState._id === response.topic._id) {
           return response.topic;
         }
-        shouldShowToast = true;
+
+        setUnreadMessages((prevUnread) => [...prevUnread, response.topic._id]);
+
         return prevState;
       });
 
       setTopicsList(sortedTopics);
       saveChatToSession(sortedTopics);
-
-      if (shouldShowToast) {
-        setTimeout(() => {
-          toast.info(`New message in "${response.topic.name}"`);
-        }, 0);
-      }
     }
   };
 
@@ -98,7 +99,8 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
         user={user}
         chat={topicsList}
         setActiveTopic={onActiveTopic}
-        activeTopic={activeTopic as Topic}/>
+        activeTopic={activeTopic as Topic}
+        unreadMessages={unreadMessages}/>
       <Messenger topic={activeTopic as Topic}/>
     </div>
   );

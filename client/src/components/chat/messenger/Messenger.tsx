@@ -80,7 +80,6 @@ export const Messenger: React.FC<MessengerProps> = ({topic}) => {
   const handleEditToggle = (): void => {
     setIsEditing(true);
   };
-
   const handleSaveName = (): void => {
     const validationError = validateTopicName(editedName);
     if (validationError) {

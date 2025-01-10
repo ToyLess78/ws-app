@@ -26,23 +26,6 @@
     font-weight: bold;
     margin-bottom: 15px;
   }
-
-  &__logout {
-    border-radius: 10px;
-    padding: 4px 10px;
-    border: 1px solid $textPrimary;
-    outline: none;
-    transition: all .2s ease-in-out;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 0.4;
-    }
-
-    &:active {
-      opacity: 1;
-    }
-  }
 }
 
 .facebook-button {
@@ -55,3 +38,4 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
