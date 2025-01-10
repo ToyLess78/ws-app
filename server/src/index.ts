@@ -4,8 +4,8 @@ import { TopicHandler, UserHandler } from "./handlers/handlers";
 import * as dotenv from "dotenv";
 import { Database } from "./data/database";
 import { Topic, User } from "./data/models/models";
-import { FacebookAuthService, GoogleAuthService } from "./services/services";
-import { registerAuthListeners, registerTopicListeners, registerMessageListeners } from "./listeners/listeners";
+import { FacebookAuthService, GoogleAuthService, RandomMessageService } from "./services/services";
+import { registerAuthListeners, registerMessageListeners, registerTopicListeners } from "./listeners/listeners";
 import { MessageHandler } from "./handlers/message.handler";
 
 dotenv.config();
@@ -34,6 +34,7 @@ const initializeServer = async () => {
 
     const facebookAuthService = new FacebookAuthService(userHandler, topicHandler);
     const googleAuthService = new GoogleAuthService(userHandler, topicHandler);
+    const randomMessageService = RandomMessageService.Instance;
 
     io.on("connection", async (socket: Socket) => {
       console.info("Client connected");
@@ -42,7 +43,7 @@ const initializeServer = async () => {
 
       registerTopicListeners(socket, topicHandler);
 
-      registerMessageListeners(socket, messageHandler);
+      registerMessageListeners(socket, messageHandler, topicHandler, randomMessageService);
 
     });
 

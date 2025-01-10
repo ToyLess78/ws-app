@@ -1,9 +1,14 @@
 import { Socket } from "socket.io";
-import { GptService } from "../services/gpt.service";
-import { MessageHandler } from "../handlers/message.handler";
+import { GptService, RandomMessageService } from "../services/services";
+import { MessageHandler, TopicHandler } from "../handlers/handlers";
 import { Message } from "../data/models/message";
 
-export const registerMessageListeners = (socket: Socket, messageHandler: MessageHandler): void => {
+export const registerMessageListeners = (
+  socket: Socket,
+  messageHandler: MessageHandler,
+  topicHandler: TopicHandler,
+  randomMessageService: RandomMessageService
+): void => {
   socket.on("sendMessage", async (data) => {
     const {topicId, message} = data;
 
@@ -34,5 +39,16 @@ export const registerMessageListeners = (socket: Socket, messageHandler: Message
       console.error("Failed to add message to topic:", error.message);
       socket.emit("error", {success: false, message: error.message});
     }
+  });
+
+  socket.on("startRandomMessages", async (data) => {
+    const {userId} = data;
+
+    if (!userId) {
+      socket.emit("error", {success: false, message: "User ID is required."});
+      return;
+    }
+
+    await randomMessageService.sendRandomMessages(userId, topicHandler, messageHandler, socket);
   });
 };
