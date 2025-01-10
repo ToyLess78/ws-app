@@ -10,10 +10,9 @@ import { TopicActions } from "./TopicActions.tsx";
 
 interface MessengerProps {
   topic?: Topic;
-  sendMessage: (topic: Topic, message: string) => void;
 }
 
-export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
+export const Messenger: React.FC<MessengerProps> = ({topic}) => {
   const [messageValue, setMessageValue] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedName, setEditedName] = useState<string>(topic?.name || "");
@@ -26,9 +25,17 @@ export const Messenger: React.FC<MessengerProps> = ({topic, sendMessage}) => {
   }, [topic?.name]);
 
   const handleSendMessage = (): void => {
-    if (messageValue.trim()) {
-      sendMessage(topic as Topic, messageValue);
+    if (messageValue.trim() && topic?._id) {
+      const newMessage = {
+        text: messageValue.trim(),
+        role: "user",
+      };
+
+      socket.emit("sendMessage", {topicId: topic._id, message: newMessage});
+
       setMessageValue("");
+    } else {
+      toast.error("Cannot send empty message or invalid topic.");
     }
   };
 
