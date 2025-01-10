@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import { TopicHandler } from "../handlers/handlers";
 
-export const topicListeners = (socket: Socket, topicHandler: TopicHandler): void => {
+export const registerTopicListeners = (socket: Socket, topicHandler: TopicHandler): void => {
   socket.on("createTopic", async (data) => {
     const {userId, name} = data;
 
