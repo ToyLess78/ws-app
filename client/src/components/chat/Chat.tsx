@@ -16,9 +16,11 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
     saveChatToSession,
     getChatFromSession,
     getUnreadMessagesFromSession,
-    saveUnreadMessagesToSession
+    saveUnreadMessagesToSession,
+    getActiveTopicFromSession,
+    saveActiveTopicToSession
   } = useSessionStorage();
-  const [activeTopic, setActiveTopic] = useState({});
+  const [activeTopic, setActiveTopic] = useState(getActiveTopicFromSession() || {});
 
   const [topicsList, setTopicsList] = useState<Topic[]>(getChatFromSession() || []);
 
@@ -27,6 +29,7 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
 
   const onActiveTopic = (topic: Topic) => {
     setActiveTopic(topic);
+    saveActiveTopicToSession(topic);
 
     setUnreadMessages((prevUnread) => prevUnread.filter((id) => id !== topic._id));
   };

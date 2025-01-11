@@ -12,9 +12,27 @@ export const useSessionStorage = () => {
     }
   }, []);
 
+  const saveActiveTopicToSession = useCallback((activeTopic: Topic | {}) => {
+    try {
+      sessionStorage.setItem("activeTopic", JSON.stringify(activeTopic));
+    } catch (error) {
+      toast.error(`Failed to save active topic: ${error}`);
+    }
+  }, []);
+
+  const getActiveTopicFromSession = useCallback((): Topic | {} => {
+    try {
+      const storedActiveTopic = sessionStorage.getItem("activeTopic");
+      return storedActiveTopic ? JSON.parse(storedActiveTopic) : {};
+    } catch (error) {
+      toast.error(`Failed to get active topic: ${error}`);
+      return {};
+    }
+  }, []);
+
   const saveUserToSession = useCallback((user: User) => {
     try {
-      const {unreadMessages: userUnreadMessages = [], ...userWithoutUnread} = user;
+      const { unreadMessages: userUnreadMessages = [], ...userWithoutUnread } = user;
       sessionStorage.setItem("user", JSON.stringify(userWithoutUnread));
 
       saveUnreadMessagesToSession(userUnreadMessages);
@@ -66,6 +84,7 @@ export const useSessionStorage = () => {
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("chat");
       sessionStorage.removeItem("unreadMessages");
+      sessionStorage.removeItem("activeTopic");
     } catch (error) {
       toast.error(`Failed to clear session: ${error}`);
     }
@@ -75,9 +94,11 @@ export const useSessionStorage = () => {
     saveUserToSession,
     saveChatToSession,
     saveUnreadMessagesToSession,
+    saveActiveTopicToSession,
     getUserFromSession,
     getChatFromSession,
     getUnreadMessagesFromSession,
+    getActiveTopicFromSession,
     clearSession,
   };
 };
