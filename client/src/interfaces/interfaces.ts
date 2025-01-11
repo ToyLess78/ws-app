@@ -5,7 +5,7 @@ export interface User {
   picture?: string;
   email: string;
   createdAt?: string;
-
+  unreadMessages?: string[];
 }
 
 export interface Topic {

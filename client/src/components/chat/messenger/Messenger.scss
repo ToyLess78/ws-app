@@ -5,6 +5,7 @@
   background-color: $bgSecondaryLight;
   display: flex;
   flex-direction: column;
+  max-height: 99vh;
 
   &__empty {
     font-weight: 700;
@@ -22,6 +23,13 @@
   &__row {
     display: flex;
     column-gap: 10px;
+    position: relative;
+
+    .messenger__action {
+      position: absolute;
+      top: -30px;
+      right: 0;
+    }
   }
 
   .hide {
@@ -180,6 +188,7 @@
 
 .action-button {
   cursor: pointer;
+  background: none;
 
   &:hover {
     color: gray;

@@ -41,7 +41,8 @@ export const Messenger: React.FC<MessengerProps> = ({topic}) => {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
-      handleSendMessage();
+      isEditing ? handleSaveName() :
+        handleSendMessage();
     }
   };
 
@@ -109,6 +110,7 @@ export const Messenger: React.FC<MessengerProps> = ({topic}) => {
           className="messenger__user-name"
           value={editedName}
           onChange={handleEditNameChange}
+          onKeyDown={handleKeyDown}
           disabled={!isEditing}
         />
         <TopicActions
