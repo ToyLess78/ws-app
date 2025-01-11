@@ -1,24 +1,31 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { Topic, User } from "../interfaces/interfaces";
 
 export const useSessionStorage = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [chat, setChat] = useState<Topic[]>([]);
+
+  const saveUnreadMessagesToSession = useCallback((messages: string[]) => {
+    try {
+      sessionStorage.setItem("unreadMessages", JSON.stringify(messages));
+    } catch (error) {
+      toast.error(`Failed to save unread messages: ${error}`);
+    }
+  }, []);
 
   const saveUserToSession = useCallback((user: User) => {
     try {
-      sessionStorage.setItem("user", JSON.stringify(user));
-      setUser(user);
+      const {unreadMessages: userUnreadMessages = [], ...userWithoutUnread} = user;
+      sessionStorage.setItem("user", JSON.stringify(userWithoutUnread));
+
+      saveUnreadMessagesToSession(userUnreadMessages);
     } catch (error) {
       toast.error(`Failed to save user: ${error}`);
     }
-  }, []);
+  }, [saveUnreadMessagesToSession]);
 
   const saveChatToSession = useCallback((chat: Topic[]) => {
     try {
       sessionStorage.setItem("chat", JSON.stringify(chat));
-      setChat(chat);
     } catch (error) {
       toast.error(`Failed to save chat: ${error}`);
     }
@@ -31,6 +38,16 @@ export const useSessionStorage = () => {
     } catch (error) {
       toast.error(`Failed to get user: ${error}`);
       return null;
+    }
+  }, []);
+
+  const getUnreadMessagesFromSession = useCallback((): string[] => {
+    try {
+      const storedUnreadMessages = sessionStorage.getItem("unreadMessages");
+      return storedUnreadMessages ? JSON.parse(storedUnreadMessages) : [];
+    } catch (error) {
+      toast.error(`Failed to get unread messages: ${error}`);
+      return [];
     }
   }, []);
 
@@ -48,8 +65,7 @@ export const useSessionStorage = () => {
     try {
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("chat");
-      setUser(null);
-      setChat([]);
+      sessionStorage.removeItem("unreadMessages");
     } catch (error) {
       toast.error(`Failed to clear session: ${error}`);
     }
@@ -58,10 +74,10 @@ export const useSessionStorage = () => {
   return {
     saveUserToSession,
     saveChatToSession,
+    saveUnreadMessagesToSession,
     getUserFromSession,
     getChatFromSession,
+    getUnreadMessagesFromSession,
     clearSession,
-    user,
-    chat,
   };
 };

@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
-import { TopicHandler } from "../handlers/handlers";
+import { TopicHandler, UserHandler } from "../handlers/handlers";
 
-export const registerTopicListeners = (socket: Socket, topicHandler: TopicHandler): void => {
+export const registerTopicListeners = (socket: Socket, topicHandler: TopicHandler, userHandler: UserHandler): void => {
   socket.on("createTopic", async (data) => {
     const {userId, name} = data;
 
@@ -44,6 +44,23 @@ export const registerTopicListeners = (socket: Socket, topicHandler: TopicHandle
       socket.emit("topicUpdated", {success: true, topic: updatedTopic});
     } catch (error) {
       console.error("Failed to update topic name:", error.message);
+      socket.emit("error", {success: false, message: error.message});
+    }
+  });
+
+  socket.on("updateUnread", async (data) => {
+    const {userId, unreadMessages} = data;
+
+    if (!userId || !Array.isArray(unreadMessages)) {
+      socket.emit("error", {success: false, message: "Invalid unread messages data."});
+      return;
+    }
+
+    try {
+      await userHandler.updateUnreadMessages(userId, unreadMessages);
+      socket.emit("unreadUpdated", {success: true});
+    } catch (error) {
+      console.error("Failed to update unread messages:", error.message);
       socket.emit("error", {success: false, message: error.message});
     }
   });

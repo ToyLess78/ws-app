@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { Message } from "../../../interfaces/interfaces";
+import { TopicActions } from "./TopicActions.tsx";
 
 interface MessagesProps {
   messages: Message[];
@@ -34,11 +35,18 @@ export const Messages: React.FC<MessagesProps> = ({messages, photo}) => {
                 >
                   {message.text}
                 </p>
+                {message.role === "user" && <TopicActions
+                  isEditing={false}
+                  handleSave={() => console.log("handleSaveName")}
+                  handleEdit={() => console.log("handleSaveName")}
+                  handleDelete={() => console.log("handleSaveName")}
+                />}
                 {message.timestamp && (
                   <span className="messenger__message-date">
                   {formattedDate(message.timestamp)}
                 </span>
                 )}
+
               </div>
             </div>
           </article>

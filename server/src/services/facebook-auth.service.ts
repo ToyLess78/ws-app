@@ -27,6 +27,7 @@ export class FacebookAuthService {
         picture: data.picture?.data?.url || "",
         email: data.email || undefined,
         createdAt: new Date().toISOString(),
+        unreadMessages: [],
       };
 
       await this.userHandler.addUser(newUser);

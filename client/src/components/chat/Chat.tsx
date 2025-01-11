@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Chat.scss";
 import { Sidebar } from "./sidebar/Sidebar";
 import { Messenger } from "./messenger/Messenger";
@@ -15,13 +15,15 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
   const {
     saveChatToSession,
     getChatFromSession,
+    getUnreadMessagesFromSession,
+    saveUnreadMessagesToSession
   } = useSessionStorage();
   const [activeTopic, setActiveTopic] = useState({});
 
   const [topicsList, setTopicsList] = useState<Topic[]>(getChatFromSession() || []);
 
-  const [unreadMessages, setUnreadMessages] = useState<string[]>([]);
-
+  const [unreadMessages, setUnreadMessages] = useState<string[]>(getUnreadMessagesFromSession() || []);
+  const isInitialLoad = useRef(true);
 
   const onActiveTopic = (topic: Topic) => {
     setActiveTopic(topic);
@@ -77,6 +79,16 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
   const handleSocketError = (response: { message: string }) => {
     toast.error(`Error: ${response.message}`);
   };
+
+  useEffect(() => {
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+    const userId = user._id;
+    socket.emit("updateUnread", {userId, unreadMessages});
+    saveUnreadMessagesToSession(unreadMessages);
+  }, [unreadMessages]);
 
   useEffect(() => {
     socket.on("error", handleSocketError);

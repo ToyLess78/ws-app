@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useContext, useEffect, useState } from "react";
 import "./Sidebar.scss";
 import { SidebarActions } from "./SidebarActions.tsx";
 import { Topics } from "./topics/Topics.tsx";
@@ -12,7 +12,7 @@ interface SidebarProps {
   setActiveTopic: (topic: Topic) => void;
   chat: Topic[];
   activeTopic: Topic;
-  unreadMessages: string[] | [];
+  unreadMessages: string[];
 
 }
 
@@ -48,6 +48,12 @@ export const Sidebar: React.FC<SidebarProps> = (
     });
 
     setSearchValue("");
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === "Enter" && !chatLength) {
+      handleAddTopic();
+    }
   };
 
   const filteredTopics = chat.filter(({name}) =>
@@ -86,6 +92,7 @@ export const Sidebar: React.FC<SidebarProps> = (
             placeholder="Search or start new chat ..."
             value={searchValue}
             onChange={handleSearchChange}
+            onKeyDown={handleKeyDown}
             aria-label="Search for chats"
           />
 

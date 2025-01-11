@@ -16,4 +16,11 @@ export class UserHandler {
   public async getUserById(userId: string): Promise<User | null> {
     return await this.usersCollection.findOne({_id: userId});
   }
+
+  public async updateUnreadMessages(userId: string, unreadMessages: string[]): Promise<void> {
+    await this.usersCollection.updateOne(
+      {_id: userId},
+      {$set: {unreadMessages}}
+    );
+  }
 }
