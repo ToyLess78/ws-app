@@ -1,7 +1,7 @@
-import { Message } from "../data/models/message";
 import { Socket } from "socket.io";
-import { getRandomPhrase } from "../utils/utils";
+import { Message } from "../data/models/message";
 import { MessageHandler, TopicHandler } from "../handlers/handlers";
+import { getRandomPhrase } from "../utils/utils";
 
 export class RandomMessageService {
   private static instance: RandomMessageService;

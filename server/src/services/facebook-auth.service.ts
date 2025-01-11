@@ -1,6 +1,6 @@
-import { TopicHandler, UserHandler } from "../handlers/handlers";
 import { FacebookResponse } from "../common/interfaces";
 import { Topic, User } from "../data/models/models";
+import { TopicHandler, UserHandler } from "../handlers/handlers";
 
 export class FacebookAuthService {
   private userHandler: UserHandler;

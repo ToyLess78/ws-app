@@ -1,5 +1,5 @@
-import { Message } from "./message";
 import { ObjectId } from "mongodb";
+import { Message } from "./message";
 
 export class Topic {
   public _id?: ObjectId;
