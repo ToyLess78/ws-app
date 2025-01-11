@@ -1,11 +1,10 @@
-import { ChangeEvent, KeyboardEvent, useContext, useEffect, useState } from "react";
-import "./Sidebar.scss";
-import { SidebarActions } from "./SidebarActions.tsx";
-import { Topics } from "./topics/Topics.tsx";
+import React from "react";
+import { SocketContext } from "../../../context/socket";
+import { useSidebarHandler } from "../../../hooks/hooks";
 import { Topic, User } from "../../../interfaces/interfaces";
-import { SocketContext } from "../../../context/socket.ts";
-import { toast } from "react-toastify";
-import { validateTopicName } from "../../../utils/validateTopicName.ts";
+import "./Sidebar.scss";
+import { SidebarActions } from "./SidebarActions";
+import { Topics } from "./topics/Topics";
 
 interface SidebarProps {
   user?: User;
@@ -13,7 +12,6 @@ interface SidebarProps {
   chat: Topic[];
   activeTopic: Topic;
   unreadMessages: string[];
-
 }
 
 export const Sidebar: React.FC<SidebarProps> = (
@@ -22,55 +20,24 @@ export const Sidebar: React.FC<SidebarProps> = (
     setActiveTopic,
     chat,
     activeTopic,
-    unreadMessages
+    unreadMessages,
   }) => {
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [chatLength, setChatLength] = useState(chat.length);
-  const socket = useContext(SocketContext);
+  const socket = React.useContext(SocketContext);
 
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setSearchValue(e.target.value);
-  };
-
-  const handleAddTopic = () => {
-    const validationError = validateTopicName(searchValue);
-
-    if (validationError) {
-      toast.error(validationError);
-      return;
-    }
-
-    const trimmedValue = searchValue.trim();
-
-    socket.emit("createTopic", {
-      userId: user?._id,
-      name: trimmedValue,
-    });
-
-    setSearchValue("");
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === "Enter" && !chatLength) {
-      handleAddTopic();
-    }
-  };
-
-  const filteredTopics = chat.filter(({name}) =>
-    name.toLowerCase().startsWith(searchValue.toLowerCase())
-  );
-
-  useEffect(() => {
-    setChatLength(filteredTopics.length);
-  }, [filteredTopics.length]);
-
-  useEffect(() => {
-
-    if (filteredTopics.length && filteredTopics[0]._id === activeTopic?._id) {
-      setSearchValue("");
-    }
-
-  }, [activeTopic]);
+  const {
+    searchValue,
+    chatLength,
+    filteredTopics,
+    handleSearchChange,
+    handleAddTopic,
+    handleKeyDown,
+  } = useSidebarHandler({
+    socket,
+    user,
+    chat,
+    activeTopic,
+    setActiveTopic,
+  });
 
   return (
     <aside className="sidebar">
@@ -95,19 +62,17 @@ export const Sidebar: React.FC<SidebarProps> = (
             onKeyDown={handleKeyDown}
             aria-label="Search for chats"
           />
-
-          {chatLength ? <i className="sidebar__search-icon icon-search"/>
-            : <button
-              className="sidebar__add-button icon-add"
-              onClick={handleAddTopic}/>}
-
+          {chatLength ? (
+            <i className="sidebar__search-icon icon-search"/>
+          ) : (
+            <button className="sidebar__add-button icon-add" onClick={handleAddTopic}/>
+          )}
         </div>
       </section>
 
       <section className="sidebar__chats">
         <h2 className="sidebar__chats-title">Chats</h2>
         <div className="sidebar__chats-row">
-
           {chatLength ? (
             <Topics
               chat={filteredTopics}

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import "./Chat.scss";
-import { Sidebar } from "./sidebar/Sidebar";
-import { Messenger } from "./messenger/Messenger";
+import { useEffect, useRef } from "react";
+import { socket } from "../../context/socket";
+import { useChatHandler } from "../../hooks/hooks";
+import { useSessionStorage } from "../../hooks/useSessionStorage";
 import { Topic, User } from "../../interfaces/interfaces";
-import { useSessionStorage } from "../../hooks/useSessionStorage.ts";
-import { toast } from "react-toastify";
-import { socket } from "../../context/socket.ts";
+import "./Chat.scss";
+import { Messenger } from "./messenger/Messenger";
+import { Sidebar } from "./sidebar/Sidebar";
 
 interface ChatProps {
   user: User;
@@ -13,75 +13,20 @@ interface ChatProps {
 
 export const Chat: React.FC<ChatProps> = ({user}) => {
   const {
+    activeTopic,
+    topicsList,
+    unreadMessages,
+    onActiveTopic,
+    handleTopicCreated,
+    handleTopicDeleted,
+    handleTopicUpdated,
+  } = useChatHandler();
+  const {
     saveChatToSession,
-    getChatFromSession,
-    getUnreadMessagesFromSession,
     saveUnreadMessagesToSession,
-    getActiveTopicFromSession,
-    saveActiveTopicToSession
   } = useSessionStorage();
-  const [activeTopic, setActiveTopic] = useState(getActiveTopicFromSession() || {});
 
-  const [topicsList, setTopicsList] = useState<Topic[]>(getChatFromSession() || []);
-
-  const [unreadMessages, setUnreadMessages] = useState<string[]>(getUnreadMessagesFromSession() || []);
   const isInitialLoad = useRef(true);
-
-  const onActiveTopic = (topic: Topic) => {
-    setActiveTopic(topic);
-    saveActiveTopicToSession(topic);
-
-    setUnreadMessages((prevUnread) => prevUnread.filter((id) => id !== topic._id));
-  };
-
-  const sortTopicsByUpdatedAt = (topics: Topic[]): Topic[] => {
-    return [...topics].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-  };
-
-  const handleTopicDeleted = (response: { success: boolean; topicId: string }) => {
-    if (response.success) {
-      const updatedTopics = topicsList.filter((topic) => topic._id !== response.topicId);
-      setTopicsList(updatedTopics);
-      setActiveTopic({});
-      saveChatToSession(updatedTopics);
-    }
-  };
-
-  const handleTopicCreated = (response: { success: boolean; topic: Topic }) => {
-    if (response.success) {
-      const newTopicsList = [response.topic, ...topicsList];
-      setTopicsList(newTopicsList);
-      setActiveTopic(response.topic);
-      saveChatToSession(newTopicsList);
-    }
-  };
-
-  const handleTopicUpdated = (response: { success: boolean; topic: Topic }) => {
-    if (response.success) {
-      const updatedTopics = topicsList.map((topic) =>
-        topic._id === response.topic._id ? response.topic : topic
-      );
-
-      const sortedTopics = sortTopicsByUpdatedAt(updatedTopics);
-
-      setActiveTopic((prevState) => {
-        if ("_id" in prevState && prevState._id === response.topic._id) {
-          return response.topic;
-        }
-
-        setUnreadMessages((prevUnread) => [...prevUnread, response.topic._id]);
-
-        return prevState;
-      });
-
-      setTopicsList(sortedTopics);
-      saveChatToSession(sortedTopics);
-    }
-  };
-
-  const handleSocketError = (response: { message: string }) => {
-    toast.error(`Error: ${response.message}`);
-  };
 
   useEffect(() => {
     if (isInitialLoad.current) {
@@ -94,13 +39,11 @@ export const Chat: React.FC<ChatProps> = ({user}) => {
   }, [unreadMessages]);
 
   useEffect(() => {
-    socket.on("error", handleSocketError);
     socket.on("topicCreated", handleTopicCreated);
     socket.on("topicDeleted", handleTopicDeleted);
     socket.on("topicUpdated", handleTopicUpdated);
 
     return () => {
-      socket.off("error", handleSocketError);
       socket.off("topicCreated", handleTopicCreated);
       socket.off("topicDeleted", handleTopicDeleted);
       socket.off("topicUpdated", handleTopicUpdated);

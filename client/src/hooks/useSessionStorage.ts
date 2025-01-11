@@ -32,7 +32,7 @@ export const useSessionStorage = () => {
 
   const saveUserToSession = useCallback((user: User) => {
     try {
-      const { unreadMessages: userUnreadMessages = [], ...userWithoutUnread } = user;
+      const {unreadMessages: userUnreadMessages = [], ...userWithoutUnread} = user;
       sessionStorage.setItem("user", JSON.stringify(userWithoutUnread));
 
       saveUnreadMessagesToSession(userUnreadMessages);

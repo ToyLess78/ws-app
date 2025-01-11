@@ -1,9 +1,9 @@
+import { useCallback, useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import "./App.css";
 import { Auth, Chat } from "./components/components";
-import { toast, ToastContainer } from "react-toastify";
 import { socket, SocketContext } from "./context/socket";
-import { useEffect } from "react";
-import { useSessionStorage } from "./hooks/hooks.ts";
+import { useSessionStorage } from "./hooks/hooks";
 
 const App: React.FC = () => {
   const {
@@ -11,12 +11,12 @@ const App: React.FC = () => {
     getChatFromSession
   } = useSessionStorage();
 
-  useEffect(() => {
-    const handleSocketError = (response: { message: string }) => {
-      toast.error(`Error: ${response.message}`);
-    };
-    socket.on("error", handleSocketError);
+  const handleSocketError = useCallback((response: { message: string }) => {
+    toast.error(`Error: ${response.message}`);
+  }, []);
 
+  useEffect(() => {
+    socket.on("error", handleSocketError);
     return () => {
       socket.off("error", handleSocketError);
     };

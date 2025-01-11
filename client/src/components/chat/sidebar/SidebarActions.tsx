@@ -1,9 +1,9 @@
+import { useContext } from "react";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import { useSessionStorage } from "../../../hooks/hooks.ts";
-import { User } from "../../../interfaces/interfaces.ts";
-import { useContext } from "react";
-import { SocketContext } from "../../../context/socket.ts";
+import { SocketContext } from "../../../context/socket";
+import { useSessionStorage } from "../../../hooks/hooks";
+import { User } from "../../../interfaces/interfaces";
 
 interface SidebarActionsProps {
   user?: User;
