@@ -1,11 +1,11 @@
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import "./Auth.scss";
-import { SocketContext } from "../../context/socket";
+import { ProfileSuccessResponse } from "@greatsumini/react-facebook-login/dist/types/response.type";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useContext } from "react";
 import { toast } from "react-toastify";
-import { ProfileSuccessResponse } from "@greatsumini/react-facebook-login/dist/types/response.type";
+import { SocketContext } from "../../context/socket";
 import { useSessionStorage } from "../../hooks/hooks";
+import "./Auth.scss";
 
 const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID;
 

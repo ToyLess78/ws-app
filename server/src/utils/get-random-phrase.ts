@@ -1,5 +1,3 @@
-
-
 const commonChatPhrases = [
   "Hi, how are you?",
   "What's up?",

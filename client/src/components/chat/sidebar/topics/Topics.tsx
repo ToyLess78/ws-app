@@ -1,6 +1,6 @@
-import "./Topics.scss";
 import dayjs from "dayjs";
 import { Topic } from "../../../../interfaces/interfaces";
+import "./Topics.scss";
 
 const formattedDate = (date: Date | string) => dayjs(date).format("MMM DD, YYYY");
 

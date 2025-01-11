@@ -1,5 +1,5 @@
-import { TopicHandler, UserHandler } from "../handlers/handlers";
 import { Topic, User } from "../data/models/models";
+import { TopicHandler, UserHandler } from "../handlers/handlers";
 import { DecodedToken, TokenDecoder } from "../utils/utils";
 
 export class GoogleAuthService {

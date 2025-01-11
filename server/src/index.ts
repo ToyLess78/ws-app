@@ -1,12 +1,12 @@
+import * as dotenv from "dotenv";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import { TopicHandler, UserHandler } from "./handlers/handlers";
-import * as dotenv from "dotenv";
 import { Database } from "./data/database";
 import { Topic, User } from "./data/models/models";
-import { FacebookAuthService, GoogleAuthService, RandomMessageService } from "./services/services";
-import { registerAuthListeners, registerMessageListeners, registerTopicListeners } from "./listeners/listeners";
+import { TopicHandler, UserHandler } from "./handlers/handlers";
 import { MessageHandler } from "./handlers/message.handler";
+import { registerAuthListeners, registerMessageListeners, registerTopicListeners } from "./listeners/listeners";
+import { FacebookAuthService, GoogleAuthService, RandomMessageService } from "./services/services";
 
 dotenv.config();
 

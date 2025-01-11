@@ -1,2 +1,2 @@
-export { Chat } from "./chat/Chat.tsx";
+export { Chat } from "./chat/Chat";
 export { Auth } from "./auth/Auth";
