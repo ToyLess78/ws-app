@@ -41,7 +41,7 @@ const initializeServer = async () => {
 
       registerAuthListeners(socket, facebookAuthService, googleAuthService);
 
-      registerTopicListeners(socket, topicHandler);
+      registerTopicListeners(socket, topicHandler, userHandler);
 
       registerMessageListeners(socket, messageHandler, topicHandler, randomMessageService);
 

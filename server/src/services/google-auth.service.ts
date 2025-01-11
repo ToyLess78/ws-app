@@ -30,6 +30,7 @@ export class GoogleAuthService {
         picture: decoded.picture || "",
         email: decoded.email || undefined,
         createdAt: new Date().toISOString(),
+        unreadMessages: [],
       };
 
       await this.userHandler.addUser(newUser);

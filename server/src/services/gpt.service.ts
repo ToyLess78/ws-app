@@ -22,7 +22,14 @@ export class GptService {
     try {
       const response = await this.openai.chat.completions.create({
         model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
+        messages: [
+          {
+            role: "system",
+            content: "You are a real person engaging in a natural, friendly, and casual conversation. Be authentic, use everyday language, and respond as if you were talking to a friend, include emojis or light humor in your responses. Avoid sounding like an assistant."
+          },
+          {role: "user", content: prompt}
+        ],
+        temperature: 0.8,
       });
 
       return response.choices[0]?.message?.content || "No response generated.";
